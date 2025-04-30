@@ -7,8 +7,23 @@ authors = [
     { name = "Michael Samsom", email = "mike.samsom@asica.ca" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "aws-requests-auth>=0.4.3",
+    "boto3>=1.38.6",
+    "requests>=2.32.3",
+]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+    "python-dotenv>=1.1.0",
+]
+
+[tool.pytest.ini_options] 
+testpaths = ["tests"]
+python_files = "test_*.py"
+python_functions = "test_*"
