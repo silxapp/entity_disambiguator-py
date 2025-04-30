@@ -1,0 +1,14 @@
+[project]
+name = "entity-disambiguator-py"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Michael Samsom", email = "mike.samsom@asica.ca" }
+]
+requires-python = ">=3.13"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
