@@ -1,4 +1,3 @@
-import pytest
 from dotenv import dotenv_values
 
 from entity_disambiguator_py.client import EntityDisambiguatorClient
