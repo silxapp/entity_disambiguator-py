@@ -1,27 +1,50 @@
 from typing import Any
-import requests
 import boto3
-from aws_requests_auth.aws_auth import AWSRequestsAuth
+from botocore.exceptions import TokenRetrievalError
+from requests.structures import CaseInsensitiveDict
+
+from entity_disambiguator_py.awscurl import get_credentials_botocore, make_request
 
 
-class EntityDisambiguatorClient:
+def get_current_credentials():
+    sess = boto3.Session()
+    creds = sess.get_credentials()
 
-    def __init__(self, lambda_url: str) -> None:
-        self.url = lambda_url
-
-        session = boto3.Session()
-        credentials = session.get_credentials()
-
-        self.auth = AWSRequestsAuth(
-            aws_host=lambda_url,
-            aws_access_key=credentials.access_key,
-            aws_secret_access_key=credentials.secret_key,
-            aws_region=session.region_name,
-            aws_service="lambda",
-            aws_token=credentials.token,
+    if creds is None:
+        raise PermissionError(
+            "No credentials found, make sure you're logged in with AWS SSO"
         )
-        self.headers = {"Content-Type": "application/json"}
+
+
+class EntityDisambiguatorLambdaClient:
+
+    def __init__(self, lambda_url: str, region: str) -> None:
+        self.headers = CaseInsensitiveDict(
+            {"Accept": "application/xml", "Content-Type": "application/json"}
+        )
+        self.url = lambda_url
+        try:
+            self.key, self.secret, self.token = get_credentials_botocore()
+        except TokenRetrievalError as e:
+            raise PermissionError(
+                f"Failed to retrieve token due to {e}. Are you logged in?"
+            )
+
+        self.region = region
 
     def say_hello(self) -> dict[str, Any]:
-        response = requests.get(self.url, auth=self.auth, headers=self.headers)
+        response = make_request(
+            method="GET",
+            service="lambda",
+            region=self.region,
+            uri=self.url,
+            headers=self.headers,
+            data="",
+            access_key=self.key,
+            secret_key=self.secret,
+            security_token=self.token,
+            data_binary=False,
+            verify=True,
+            allow_redirects=False,
+        )
         return {"status_code": response.status_code, "body": response.text}

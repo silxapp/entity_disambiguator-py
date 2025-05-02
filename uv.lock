@@ -89,6 +89,7 @@ source = { editable = "." }
 dependencies = [
     { name = "aws-requests-auth" },
     { name = "boto3" },
+    { name = "botocore" },
     { name = "requests" },
 ]
 
@@ -102,6 +103,7 @@ dev = [
 requires-dist = [
     { name = "aws-requests-auth", specifier = ">=0.4.3" },
     { name = "boto3", specifier = ">=1.38.6" },
+    { name = "botocore", specifier = ">=1.38.6" },
     { name = "requests", specifier = ">=2.32.3" },
 ]
 
