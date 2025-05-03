@@ -1,0 +1,7 @@
+{
+    "id": 1,
+    "method": "get_alias_id",
+    "params": {
+        "id": "A8401600" 
+    }
+}

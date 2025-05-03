@@ -1,0 +1,7 @@
+{
+    "id": 1,
+    "method": "get_type_definition",
+    "params": {
+        "id": "T120" 
+    }
+}

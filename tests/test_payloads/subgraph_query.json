@@ -1,0 +1,10 @@
+{
+    "id": 1,
+    "method": "get_subgraph",
+    "params": {
+        "query": {
+            "start_node": "A0745015",
+            "sort_prefix": "PRED"
+        } 
+    }
+}

@@ -1,0 +1,7 @@
+{
+    "id": 1,
+    "method": "get_alias_name",
+    "params": {
+        "id": "femur" 
+    }
+}

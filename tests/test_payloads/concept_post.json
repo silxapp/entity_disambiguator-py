@@ -1,0 +1,7 @@
+{
+    "id": 1,
+    "method": "get_concept",
+    "params": {
+        "id": "C3828400" 
+    }
+}
