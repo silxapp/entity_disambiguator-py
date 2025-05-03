@@ -32,7 +32,7 @@ class EntityDisambiguatorLambdaClient:
 
         self.region = region
 
-    def say_hello(self) -> dict[str, Any]:
+    def say_hello(self) -> dict[str, int | str]:
         response = make_request(
             method="GET",
             service="lambda",
@@ -40,6 +40,24 @@ class EntityDisambiguatorLambdaClient:
             uri=self.url,
             headers=self.headers,
             data="",
+            access_key=self.key,
+            secret_key=self.secret,
+            security_token=self.token,
+            data_binary=False,
+            verify=True,
+            allow_redirects=False,
+        )
+        return {"status_code": response.status_code, "body": response.text}
+
+    def rpc_call(self, payload: str) -> dict[str, int | str]:
+        rpc_url = self.url + "api/rpc"
+        response = make_request(
+            method="POST",
+            service="lambda",
+            region=self.region,
+            uri=rpc_url,
+            headers=self.headers,
+            data=payload,
             access_key=self.key,
             secret_key=self.secret,
             security_token=self.token,

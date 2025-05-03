@@ -15,6 +15,22 @@ wheels = [
 ]
 
 [[package]]
+name = "awscurl"
+version = "0.36"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "botocore" },
+    { name = "configargparse" },
+    { name = "configparser" },
+    { name = "requests" },
+    { name = "urllib3" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f0/53/68500d2e61aff7549f878a9227eea5c80eaf6ffcad7c134c576360b1bae7/awscurl-0.36.tar.gz", hash = "sha256:9eb9d4949616d90dd7bf0d12a67eb3e1d3487bf08d75a7555d979811e5da1cb4", size = 11257 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/aa/5d/6bdaf5b865d659f2280ac76f1e2168bd4f83cedc2001ce75ee388003a356/awscurl-0.36-py3-none-any.whl", hash = "sha256:534acc211f24182a58293071082b38f721feab63af0852a198b3ed45732cc1bb", size = 9274 },
+]
+
+[[package]]
 name = "boto3"
 version = "1.38.6"
 source = { registry = "https://pypi.org/simple" }
@@ -83,11 +99,30 @@ wheels = [
 ]
 
 [[package]]
+name = "configargparse"
+version = "1.7"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/70/8a/73f1008adfad01cb923255b924b1528727b8270e67cb4ef41eabdc7d783e/ConfigArgParse-1.7.tar.gz", hash = "sha256:e7067471884de5478c58a511e529f0f9bd1c66bfef1dea90935438d6c23306d1", size = 43817 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/6f/b3/b4ac838711fd74a2b4e6f746703cf9dd2cf5462d17dac07e349234e21b97/ConfigArgParse-1.7-py3-none-any.whl", hash = "sha256:d249da6591465c6c26df64a9f73d2536e743be2f244eb3ebe61114af2f94f86b", size = 25489 },
+]
+
+[[package]]
+name = "configparser"
+version = "7.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/8b/ac/ea19242153b5e8be412a726a70e82c7b5c1537c83f61b20995b2eda3dcd7/configparser-7.2.0.tar.gz", hash = "sha256:b629cc8ae916e3afbd36d1b3d093f34193d851e11998920fdcfc4552218b7b70", size = 51273 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/09/fe/f61e7129e9e689d9e40bbf8a36fb90f04eceb477f4617c02c6a18463e81f/configparser-7.2.0-py3-none-any.whl", hash = "sha256:fee5e1f3db4156dcd0ed95bc4edfa3580475537711f67a819c966b389d09ce62", size = 17232 },
+]
+
+[[package]]
 name = "entity-disambiguator-py"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "aws-requests-auth" },
+    { name = "awscurl" },
     { name = "boto3" },
     { name = "botocore" },
     { name = "requests" },
@@ -102,6 +137,7 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "aws-requests-auth", specifier = ">=0.4.3" },
+    { name = "awscurl", specifier = ">=0.36" },
     { name = "boto3", specifier = ">=1.38.6" },
     { name = "botocore", specifier = ">=1.38.6" },
     { name = "requests", specifier = ">=2.32.3" },

@@ -2,14 +2,25 @@
 
 import re
 import os
+import sys
 import hmac
 import requests
+import pprint
 import hashlib
 import datetime
 import urllib
 from urllib.parse import quote
 from pathlib import Path
 import botocore.session
+
+IS_VERBOSE = True
+
+
+def __log(*args, **kwargs):
+    if not IS_VERBOSE:
+        return
+    stderr_pp = pprint.PrettyPrinter(stream=sys.stderr)
+    stderr_pp.pprint(*args, **kwargs)
 
 
 def get_credentials_from_file():
@@ -122,12 +133,10 @@ def task_1_create_a_canonical_request(
     request_parameters variable.
     """
     canonical_querystring = __normalize_query_string(query)
+    __log(canonical_querystring)
 
     # If the host was specified in the HTTP header, ensure that the canonical
     # headers are set accordingly
-    print("HEADERS")
-    print(headers)
-    print("--------")
     headers = requests.structures.CaseInsensitiveDict(headers)
     if "host" in headers:
         fullhost = headers["host"]
@@ -183,6 +192,7 @@ def task_1_create_a_canonical_request(
         + "\n"
         + payload_hash
     )
+    __log("\nCANONICAL REQUEST = " + canonical_request)
 
     return canonical_request, payload_hash, signed_headers
 
@@ -207,6 +217,7 @@ def task_2_create_the_string_to_sign(
         + sha256_hash(canonical_request)
     )
 
+    __log("\nSTRING_TO_SIGN = " + string_to_sign)
     return string_to_sign, algorithm, credential_scope
 
 
@@ -281,7 +292,7 @@ def task_4_build_auth_headers_for_the_request(
     headers = {
         "Authorization": authorization_header,
         "x-amz-date": amzdate,
-        "x-amz-content-sha256": payload_hash,
+        # "x-amz-content-sha256": payload_hash, # Breaks the signing for some reason
     }
     if security_token is not None:
         headers["x-amz-security-token"] = security_token
@@ -315,10 +326,15 @@ def url_path_to_dict(path):
 
 
 def __now():
-    return datetime.datetime.utcnow()
+    return datetime.datetime.now(datetime.timezone.utc)
 
 
 def __send_request(uri, data, headers, method, verify, allow_redirects):
+    __log("\nHEADERS++++++++++++++++++++++++++++++++++++")
+    __log(headers)
+
+    __log("\nBEGIN REQUEST++++++++++++++++++++++++++++++++++++")
+    __log("Request URL = " + uri)
 
     if verify is False:
         import urllib3
@@ -333,6 +349,9 @@ def __send_request(uri, data, headers, method, verify, allow_redirects):
         verify=verify,
         allow_redirects=allow_redirects,
     )
+
+    __log("\nRESPONSE++++++++++++++++++++++++++++++++++++")
+    __log("Response code: %d\n" % response.status_code)
 
     return response
 
