@@ -4,6 +4,7 @@ import re
 import os
 import sys
 import hmac
+from typing import Any
 import requests
 import pprint
 import hashlib
@@ -42,7 +43,7 @@ def get_credentials_botocore() -> tuple[str, str, str]:
     return access_key, secret_key, security_token
 
 
-def aws_url_encode(text):
+def aws_url_encode(text: str):
     """
     URI-encode each parameter name and value according to the following rules:
     - Do not URI-encode any of the unreserved characters that RFC 3986 defines: A-Z, a-z, 0-9, hyphen (-),
@@ -55,7 +56,7 @@ def aws_url_encode(text):
     return quote(text, safe="~=").replace("=", "==")
 
 
-def __normalize_query_string(query):
+def __normalize_query_string(query: str):
     parameter_pairs = (
         list(map(str.strip, s.split("="))) for s in query.split("&") if len(s) > 0
     )
@@ -67,21 +68,21 @@ def __normalize_query_string(query):
     return normalized
 
 
-def sha256_hash(val):
+def sha256_hash(val: str):
     """
     Sha256 hash of text data.
     """
     return hashlib.sha256(val.encode("utf-8")).hexdigest()
 
 
-def sha256_hash_for_binary_data(val):
+def sha256_hash_for_binary_data(val: bytes):
     """
     Sha256 hash of binary data.
     """
     return hashlib.sha256(val).hexdigest()
 
 
-def sign(key, msg):
+def sign(key: bytes, msg: str):
     """
     Key derivation functions.
     See: http://docs.aws.amazon.com
@@ -104,14 +105,14 @@ def remove_default_port(parsed_url):
 
 
 def task_1_create_a_canonical_request(
-    query,
+    query: str,
     headers: dict,
-    port,
-    host,
-    amzdate,
-    method,
-    data,
-    security_token,
+    port: str,
+    host: str,
+    amzdate: str,
+    method: str,
+    data: Any,
+    security_token: str,
     data_binary,
     canonical_uri,
 ):
@@ -252,14 +253,14 @@ def task_3_calculate_the_signature(
 
 
 def task_4_build_auth_headers_for_the_request(
-    amzdate,
-    payload_hash,
-    algorithm,
-    credential_scope,
-    signed_headers,
-    signature,
-    access_key,
-    security_token,
+    amzdate: str,
+    _payload_hash: str,
+    algorithm: str,
+    credential_scope: str,
+    signed_headers: str,
+    signature: str,
+    access_key: str,
+    security_token: str,
 ):
     """
     ************* TASK 4: ADD SIGNING INFORMATION TO THE REQUEST ***********
@@ -299,7 +300,7 @@ def task_4_build_auth_headers_for_the_request(
     return headers
 
 
-def url_path_to_dict(path):
+def url_path_to_dict(path: str):
     """http://stackoverflow.com/a/17892757/142207"""
 
     pattern = (
@@ -316,6 +317,9 @@ def url_path_to_dict(path):
     url_match = regex.match(path)
     url_dict = url_match.groupdict() if url_match is not None else None
 
+    if url_dict is None:
+        raise ValueError(f"Invalid path, could not process {path}")
+
     if url_dict["path"] is None:
         url_dict["path"] = "/"
 
@@ -329,7 +333,9 @@ def __now():
     return datetime.datetime.now(datetime.timezone.utc)
 
 
-def __send_request(uri, data, headers, method, verify, allow_redirects):
+def __send_request(
+    uri: str, data: str, headers: dict, method: str, verify: bool, allow_redirects: bool
+):
     __log("\nHEADERS++++++++++++++++++++++++++++++++++++")
     __log(headers)
 
@@ -357,18 +363,18 @@ def __send_request(uri, data, headers, method, verify, allow_redirects):
 
 
 def make_request(
-    method,
-    service,
-    region,
-    uri,
-    headers,
-    data,
-    access_key,
-    secret_key,
-    security_token,
-    data_binary,
-    verify=True,
-    allow_redirects=False,
+    method: str,
+    service: str,
+    region: str,
+    uri: str,
+    headers: dict,
+    data: Any,
+    access_key: str,
+    secret_key: str,
+    security_token: str,
+    data_binary: bool,
+    verify: bool = True,
+    allow_redirects: bool = False,
 ):
     """
     # Make HTTP request with AWS Version 4 signing
