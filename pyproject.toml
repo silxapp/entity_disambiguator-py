@@ -6,7 +6,7 @@ readme = "README.md"
 authors = [
     { name = "Michael Samsom", email = "mike.samsom@asica.ca" }
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.12"
 dependencies = [
     "aws-requests-auth>=0.4.3",
     "awscurl>=0.36",
