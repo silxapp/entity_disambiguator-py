@@ -7,8 +7,16 @@ from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient
 
 
 config = dotenv_values("test.env")
+lambda_url = config["URL"]
+if lambda_url is None:
+    raise SystemExit("No lambda url set")
+
+region = config["REGION"]
+if region is None:
+    raise SystemExit("No AWS region set")
+
 client = EntityDisambiguatorLambdaClient(
-    lambda_url=config["URL"], region=config["REGION"]
+    lambda_url=lambda_url, region=region
 )
 
 
@@ -43,5 +51,5 @@ def test_concept_rpc():
     )
 
     __run_rpc(test_directory.joinpath("concept_post.json"))
-    # __run_rpc(test_directory.joinpath("alias_name_post.json"))
-    # __run_rpc(test_directory.joinpath("alias_id_post.json"))
+    __run_rpc(test_directory.joinpath("alias_name_post.json"))
+    __run_rpc(test_directory.joinpath("alias_id_post.json"))
