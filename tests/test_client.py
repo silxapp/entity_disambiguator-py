@@ -53,3 +53,8 @@ def test_concept_rpc():
     __run_rpc(test_directory.joinpath("concept_post.json"))
     __run_rpc(test_directory.joinpath("alias_name_post.json"))
     __run_rpc(test_directory.joinpath("alias_id_post.json"))
+
+
+def test_get_aliases():
+    r = client.get_aliases("magnovatin b")
+    assert r["status_code"] == 200
