@@ -1,10 +1,10 @@
 import json
+from urllib.parse import urljoin
 
 import boto3
-from botocore.exceptions import TokenRetrievalError
-from requests.structures import CaseInsensitiveDict
-
-from entity_disambiguator_py.awscurl import get_credentials_botocore, make_request
+import requests
+from requests.models import Response
+from requests_aws4auth import AWS4Auth
 
 
 def get_current_credentials():
@@ -15,60 +15,50 @@ def get_current_credentials():
         raise PermissionError(
             "No credentials found, make sure you're logged in with AWS SSO"
         )
+    return creds
 
 
 class EntityDisambiguatorLambdaClient:
 
     def __init__(self, lambda_url: str, region: str) -> None:
-        self.headers = CaseInsensitiveDict(
-            {"Accept": "application/xml", "Content-Type": "application/json"}
-        )
+        self.headers = {"Accept": "application/xml", "Content-Type": "application/json"}
         self.url = lambda_url
-        try:
-            self.key, self.secret, self.token = get_credentials_botocore()
-        except TokenRetrievalError as e:
-            raise PermissionError(
-                f"Failed to retrieve token due to {e}. Are you logged in?"
-            )
-
+        self.rpc_url = urljoin(self.url, "/api/rpc")
         self.region = region
 
-    def say_hello(self) -> dict[str, int | str]:
-        response = make_request(
-            method="GET",
-            service="lambda",
-            region=self.region,
-            uri=self.url,
-            headers=self.headers,
-            data="",
-            access_key=self.key,
-            secret_key=self.secret,
-            security_token=self.token,
-            data_binary=False,
-            verify=True,
-            allow_redirects=False,
+        creds = get_current_credentials()
+        self.auth = AWS4Auth(
+            creds.access_key,
+            creds.secret_key,
+            region,
+            "lambda",
+            session_token=creds.token
         )
-        return {"status_code": response.status_code, "body": response.text}
 
-    def rpc_call(self, payload: str) -> dict[str, int | str]:
-        rpc_url = self.url + "api/rpc"
-        response = make_request(
-            method="POST",
-            service="lambda",
-            region=self.region,
-            uri=rpc_url,
+    def _get_request(self, url: str) -> Response:
+        return requests.get(
+            url,
+            auth=self.auth,
             headers=self.headers,
-            data=payload,
-            access_key=self.key,
-            secret_key=self.secret,
-            security_token=self.token,
-            data_binary=False,
-            verify=True,
-            allow_redirects=False,
         )
-        return {"status_code": response.status_code, "body": response.text}
 
-    def get_aliases(self, name: str) -> dict[str, int | str]:
+    def _post_request(self, url: str, payload: dict) -> Response:
+        return requests.post(
+            url,
+            auth=self.auth,
+            headers=self.headers,
+            data=json.dumps(payload),
+        )
+
+    def say_hello(self) -> Response:
+        url = self.url + "/"
+        print(f"RPC URL {url}")
+        return self._get_request(url)
+
+    def rpc_call(self, payload: dict) -> Response:
+        return self._post_request(self.rpc_url, payload)
+
+    def get_aliases(self, name: str) -> Response:
         payload = {
             "id": 1,
             "method": "get_aliases",
@@ -76,4 +66,4 @@ class EntityDisambiguatorLambdaClient:
                 "id": name
             }
         }
-        return self.rpc_call(json.dumps(payload))
+        return self.rpc_call(payload)
