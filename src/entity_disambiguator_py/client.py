@@ -8,7 +8,6 @@ from requests.exceptions import HTTPError
 from requests_aws4auth import AWS4Auth
 
 from entity_disambiguator_py.model import GetAliasesResponse, MessageResponse
-from ctypes import memset
 
 
 def get_current_credentials():
