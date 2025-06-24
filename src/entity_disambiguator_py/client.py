@@ -4,7 +4,11 @@ from urllib.parse import urljoin
 import boto3
 import requests
 from requests.models import Response
+from requests.exceptions import HTTPError
 from requests_aws4auth import AWS4Auth
+
+from entity_disambiguator_py.model import GetAliasesResponse, MessageResponse
+from ctypes import memset
 
 
 def get_current_credentials():
@@ -50,15 +54,18 @@ class EntityDisambiguatorLambdaClient:
             data=json.dumps(payload),
         )
 
-    def say_hello(self) -> Response:
+    def say_hello(self) -> MessageResponse:
         url = self.url + "/"
-        print(f"RPC URL {url}")
-        return self._get_request(url)
+        r = self._get_request(url)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in say_hello")
+
+        return MessageResponse(message=r.content.decode())
 
     def rpc_call(self, payload: dict) -> Response:
         return self._post_request(self.rpc_url, payload)
 
-    def get_aliases(self, name: str) -> Response:
+    def get_aliases(self, name: str) -> GetAliasesResponse:
         payload = {
             "id": 1,
             "method": "get_aliases",
@@ -66,4 +73,9 @@ class EntityDisambiguatorLambdaClient:
                 "id": name
             }
         }
-        return self.rpc_call(payload)
+
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in say_hello")
+
+        return GetAliasesResponse.model_validate_json(r.content)

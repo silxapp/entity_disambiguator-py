@@ -33,8 +33,8 @@ def __run_rpc(p):
 
 
 def test_say_hello():
-    r = client.say_hello()
-    assert r.status_code == 200
+    resp = client.say_hello()
+    assert resp.message == "Silχ Digital Health entity disambiguator service"
 
 
 def test_concept_rpc():
@@ -49,4 +49,5 @@ def test_concept_rpc():
 
 def test_get_aliases():
     r = client.get_aliases("magnovatin b")
-    assert r.status_code == 200
+    assert len(r.result) == 1
+    assert r.result[0].atom_id == "A17398278"
