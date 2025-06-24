@@ -51,3 +51,6 @@ def test_get_aliases():
     r = client.get_aliases("magnovatin b")
     assert len(r.result) == 1
     assert r.result[0].atom_id == "A17398278"
+
+    r = client.get_aliases("adslkfjalj31-3i")
+    assert len(r.result) == 0

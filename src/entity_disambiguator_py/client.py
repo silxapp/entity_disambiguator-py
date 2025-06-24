@@ -64,9 +64,9 @@ class EntityDisambiguatorLambdaClient:
     def rpc_call(self, payload: dict) -> Response:
         return self._post_request(self.rpc_url, payload)
 
-    def get_aliases(self, name: str) -> GetAliasesResponse:
+    def get_aliases(self, name: str, call_id: int = 1) -> GetAliasesResponse:
         payload = {
-            "id": 1,
+            "id": call_id,
             "method": "get_aliases",
             "params": {
                 "id": name
@@ -74,6 +74,9 @@ class EntityDisambiguatorLambdaClient:
         }
 
         r = self.rpc_call(payload)
+        if r.status_code == 404:
+            return GetAliasesResponse(id=call_id, result=[])
+
         if r.status_code != 200:
             raise HTTPError(f"status: {r.status_code} error in say_hello")
 
