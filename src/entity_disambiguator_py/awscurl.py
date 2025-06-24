@@ -10,6 +10,7 @@ import pprint
 import hashlib
 import datetime
 import urllib
+import urllib.parse
 from urllib.parse import quote
 from pathlib import Path
 import botocore.session

@@ -1,4 +1,5 @@
-from typing import Any
+import json
+
 import boto3
 from botocore.exceptions import TokenRetrievalError
 from requests.structures import CaseInsensitiveDict
@@ -66,3 +67,13 @@ class EntityDisambiguatorLambdaClient:
             allow_redirects=False,
         )
         return {"status_code": response.status_code, "body": response.text}
+
+    def get_aliases(self, name: str) -> dict[str, int | str]:
+        payload = {
+            "id": 1,
+            "method": "get_aliases",
+            "params": {
+                "id": name
+            }
+        }
+        return self.rpc_call(json.dumps(payload))
