@@ -15,9 +15,7 @@ region = config["REGION"]
 if region is None:
     raise SystemExit("No AWS region set")
 
-client = EntityDisambiguatorLambdaClient(
-    lambda_url=lambda_url, region=region
-)
+client = EntityDisambiguatorLambdaClient(lambda_url=lambda_url, region=region)
 
 
 def __read(p):
