@@ -1,4 +1,5 @@
 import json
+from operator import call
 from urllib.parse import urljoin
 
 import boto3
@@ -7,7 +8,13 @@ from requests.models import Response
 from requests.exceptions import HTTPError
 from requests_aws4auth import AWS4Auth
 
-from entity_disambiguator_py.model import GetAliasesResponse, MessageResponse
+from entity_disambiguator_py.model import (
+    GetAliasesResponse,
+    GetAllConceptResponse,
+    GetConceptResponse,
+    ListConceptResponse,
+    MessageResponse,
+)
 
 
 def get_current_credentials():
@@ -35,7 +42,7 @@ class EntityDisambiguatorLambdaClient:
             creds.secret_key,
             region,
             "lambda",
-            session_token=creds.token
+            session_token=creds.token,
         )
 
     def _get_request(self, url: str) -> Response:
@@ -65,19 +72,28 @@ class EntityDisambiguatorLambdaClient:
         return self._post_request(self.rpc_url, payload)
 
     def get_aliases(self, name: str, call_id: int = 1) -> GetAliasesResponse:
-        payload = {
-            "id": call_id,
-            "method": "get_aliases",
-            "params": {
-                "id": name
-            }
-        }
+        payload = {"id": call_id, "method": "get_aliases", "params": {"id": name}}
 
         r = self.rpc_call(payload)
         if r.status_code == 404:
             return GetAliasesResponse(id=call_id, result=[])
 
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in say_hello")
+            raise HTTPError(f"status: {r.status_code} error in get_aliases")
 
         return GetAliasesResponse.model_validate_json(r.content)
+
+    def list_concepts(self, call_id: int = 1) -> ListConceptResponse:
+        payload = {"id": call_id, "method": "list_concepts"}
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in list_concept")
+        return ListConceptResponse.model_validate_json(r.content)
+
+    def get_concept(self, concept_id, call_id: int = 1) -> GetConceptResponse:
+        payload = {"id": call_id, "method": "get_concept", "params": {"id": concept_id}}
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_concept")
+
+        return GetConceptResponse.model_validate_json(r.content)
