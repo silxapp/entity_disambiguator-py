@@ -1,5 +1,4 @@
 import json
-from operator import call
 from urllib.parse import urljoin
 
 import boto3
@@ -10,7 +9,6 @@ from requests_aws4auth import AWS4Auth
 
 from entity_disambiguator_py.model import (
     GetAliasesResponse,
-    GetAllConceptResponse,
     GetConceptResponse,
     ListConceptResponse,
     MessageResponse,
