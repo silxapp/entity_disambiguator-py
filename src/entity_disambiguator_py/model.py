@@ -62,4 +62,5 @@ class Relationship(BaseModel):
 
 
 class GraphTraversalResponse(BaseModel):
+    id: int
     edges: list[Relationship]

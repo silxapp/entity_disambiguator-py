@@ -55,6 +55,7 @@ def test_get_aliases():
 
 
 def test_get_parents():
+    # tylenol
     r = client.get_parents("C0699142", sort_prefix="PRED", call_id=1)
     print(r)
     assert 1 == 2
