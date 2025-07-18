@@ -10,8 +10,10 @@ from requests_aws4auth import AWS4Auth
 from entity_disambiguator_py.model import (
     GetAliasesResponse,
     GetConceptResponse,
+    GraphTraversalResponse,
     ListConceptResponse,
     MessageResponse,
+    RelationshipType,
 )
 
 
@@ -88,10 +90,67 @@ class EntityDisambiguatorLambdaClient:
             raise HTTPError(f"status: {r.status_code} error in list_concept")
         return ListConceptResponse.model_validate_json(r.content)
 
-    def get_concept(self, concept_id, call_id: int = 1) -> GetConceptResponse:
+    def get_concept(self, concept_id: str, call_id: int = 1) -> GetConceptResponse:
         payload = {"id": call_id, "method": "get_concept", "params": {"id": concept_id}}
         r = self.rpc_call(payload)
         if r.status_code != 200:
             raise HTTPError(f"status: {r.status_code} error in get_concept")
 
         return GetConceptResponse.model_validate_json(r.content)
+
+    def get_parents(
+        self, umls_id: str, sort_prefix: str, call_id: int
+    ) -> GraphTraversalResponse:
+        try:
+            _ = RelationshipType[sort_prefix]
+        except KeyError:
+            raise HTTPError(f"Invalid sort prefix {sort_prefix}")
+
+        payload = {
+            "id": call_id,
+            "method": "get_parents",
+            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
+        }
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_concept")
+
+        return GraphTraversalResponse.model_validate_json(r.content)
+
+    def get_children(
+        self, umls_id: str, sort_prefix: str, call_id: int
+    ) -> GraphTraversalResponse:
+        try:
+            _ = RelationshipType[sort_prefix]
+        except KeyError:
+            raise HTTPError(f"Invalid sort prefix {sort_prefix}")
+
+        payload = {
+            "id": call_id,
+            "method": "get_children",
+            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
+        }
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_concept")
+
+        return GraphTraversalResponse.model_validate_json(r.content)
+
+    def get_subgraph(
+        self, umls_id: str, sort_prefix: str, call_id: int
+    ) -> GraphTraversalResponse:
+        try:
+            _ = RelationshipType[sort_prefix]
+        except KeyError:
+            raise HTTPError(f"Invalid sort prefix {sort_prefix}")
+
+        payload = {
+            "id": call_id,
+            "method": "get_subgraph",
+            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
+        }
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_concept")
+
+        return GraphTraversalResponse.model_validate_json(r.content)

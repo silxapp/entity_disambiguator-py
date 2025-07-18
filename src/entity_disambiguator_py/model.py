@@ -1,4 +1,6 @@
+from enum import Enum
 from typing import Optional
+
 from pydantic import BaseModel
 
 
@@ -32,3 +34,26 @@ class GetConceptResponse(BaseModel):
 class ListConceptResponse(BaseModel):
     id: int
     result: list[str]
+
+
+class RelationshipType(Enum):
+    SYN = 1
+    PRED = 2
+    CAUS = 3
+    MOD = 4
+    COMP = 5
+    DEL = 6
+    TREATS = 7
+    MEASURES = 8
+    ASSOC = 9
+    CONTR = 10
+    TRANS = 11
+
+
+class Relationship(BaseModel):
+    parent: str
+    child: str
+
+
+class GraphTraversalResponse(BaseModel):
+    edges: list[Relationship]
