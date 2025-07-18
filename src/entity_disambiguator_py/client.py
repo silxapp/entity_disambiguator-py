@@ -152,7 +152,10 @@ class EntityDisambiguatorLambdaClient:
         if r.status_code != 200:
             raise HTTPError(f"status: {r.status_code} error in get_concept")
 
-        return GraphTraversalResponse.model_validate_json(r.content)
+        content = json.loads(r.content)
+        content = {"id": content["id"], "edges": content["result"]["edges"]}
+
+        return GraphTraversalResponse.model_validate(content)
 
     def get_subgraph(
         self, umls_id: str, sort_prefix: str, call_id: int
@@ -171,4 +174,7 @@ class EntityDisambiguatorLambdaClient:
         if r.status_code != 200:
             raise HTTPError(f"status: {r.status_code} error in get_concept")
 
-        return GraphTraversalResponse.model_validate_json(r.content)
+        content = json.loads(r.content)
+        content = {"id": content["id"], "edges": content["result"]["edges"]}
+
+        return GraphTraversalResponse.model_validate(content)
