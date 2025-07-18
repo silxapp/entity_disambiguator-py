@@ -52,3 +52,9 @@ def test_get_aliases():
 
     r = client.get_aliases("adslkfjalj31-3i")
     assert len(r.result) == 0
+
+
+def test_get_parents():
+    r = client.get_parents("C0699142", sort_prefix="PRED", call_id=1)
+    print(r)
+    assert 1 == 2
