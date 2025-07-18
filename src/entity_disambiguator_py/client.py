@@ -9,6 +9,7 @@ from requests_aws4auth import AWS4Auth
 
 from entity_disambiguator_py.model import (
     GetAliasesResponse,
+    GetConceptInfoResponse,
     GetConceptResponse,
     GraphTraversalResponse,
     ListConceptResponse,
@@ -97,6 +98,20 @@ class EntityDisambiguatorLambdaClient:
             raise HTTPError(f"status: {r.status_code} error in get_concept")
 
         return GetConceptResponse.model_validate_json(r.content)
+
+    def get_concept_info(
+        self, concept_id: str, call_id: int = 1
+    ) -> GetConceptInfoResponse:
+        payload = {
+            "id": call_id,
+            "method": "get_concept_info",
+            "params": {"id": concept_id},
+        }
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_concept")
+
+        return GetConceptInfoResponse.model_validate_json(r.content)
 
     def get_parents(
         self, umls_id: str, sort_prefix: str, call_id: int

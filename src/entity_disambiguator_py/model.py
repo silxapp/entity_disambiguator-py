@@ -36,6 +36,12 @@ class ListConceptResponse(BaseModel):
     result: list[str]
 
 
+class GetConceptInfoResponse(BaseModel):
+    concept_id: str
+    definition: str
+    alias_names: list[str]
+
+
 class RelationshipType(Enum):
     SYN = 1
     PRED = 2
