@@ -57,5 +57,11 @@ def test_get_aliases():
 def test_get_parents():
     # tylenol
     r = client.get_parents("C0699142", sort_prefix="PRED", call_id=1)
+    assert len(r.edges) == 8
+
+
+def test_get_childred():
+    # tylenol
+    r = client.get_children("C0699142", sort_prefix="SYN", call_id=1)
     print(r)
-    assert 1 == 2
+    assert len(r.edges) == 4
