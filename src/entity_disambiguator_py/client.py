@@ -15,6 +15,7 @@ from entity_disambiguator_py.model import (
     ListConceptResponse,
     MessageResponse,
     RelationshipType,
+    SynonymsResponse,
 )
 
 
@@ -178,3 +179,18 @@ class EntityDisambiguatorLambdaClient:
         content = {"id": content["id"], "edges": content["result"]["edges"]}
 
         return GraphTraversalResponse.model_validate(content)
+
+    def get_synonyms(self, cid: str, call_id: int = 1) -> SynonymsResponse:
+        payload = {
+            "id": call_id,
+            "method": "get_synonyms",
+            "params": {"id": cid},
+        }
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_synonyms")
+
+        content = json.loads(r.content)
+        content = {"id": content["id"], "subgraph": content["result"]["subgraph"]}
+
+        return SynonymsResponse.model_validate(content)

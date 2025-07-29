@@ -60,8 +60,13 @@ def test_get_parents():
     assert len(r.edges) == 8
 
 
-def test_get_childred():
+def test_get_children():
     # tylenol
     r = client.get_children("C0699142", sort_prefix="SYN", call_id=1)
-    print(r)
     assert len(r.edges) == 4
+
+
+def test_get_synonyms():
+    r = client.get_synonyms("C3556763")
+    print(r)
+    assert 1 == 2

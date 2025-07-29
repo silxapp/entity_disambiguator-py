@@ -64,3 +64,8 @@ class Relationship(BaseModel):
 class GraphTraversalResponse(BaseModel):
     id: int
     edges: list[Relationship]
+
+
+class SynonymsResponse(BaseModel):
+    id: int
+    subgraph: list[str]
