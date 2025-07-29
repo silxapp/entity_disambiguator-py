@@ -3,7 +3,9 @@ import json
 from pathlib import Path
 from dotenv import dotenv_values
 
-from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient
+import pytest
+
+from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient, NoSynonymsFound
 
 
 config = dotenv_values("test.env")
@@ -68,5 +70,7 @@ def test_get_children():
 
 def test_get_synonyms():
     r = client.get_synonyms("C3556763")
-    print(r)
-    assert 1 == 2
+    assert "C3556764" in r.subgraph
+
+    with pytest.raises(NoSynonymsFound):
+        _ = client.get_synonyms("not in graph")

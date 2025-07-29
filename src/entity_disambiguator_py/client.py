@@ -18,6 +18,11 @@ from entity_disambiguator_py.model import (
     SynonymsResponse,
 )
 
+class NoSynonymsFound(Exception):
+    def __init__(self, cid: str):
+        self.message = f"No synonyms for {cid}"
+        super().__init__(self.message)
+
 
 def get_current_credentials():
     sess = boto3.Session()
@@ -187,6 +192,9 @@ class EntityDisambiguatorLambdaClient:
             "params": {"id": cid},
         }
         r = self.rpc_call(payload)
+        if r.status_code == 404:
+            raise NoSynonymsFound(cid)
+
         if r.status_code != 200:
             raise HTTPError(f"status: {r.status_code} error in get_synonyms")
 
