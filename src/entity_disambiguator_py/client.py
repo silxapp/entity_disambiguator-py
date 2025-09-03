@@ -9,6 +9,7 @@ from requests_aws4auth import AWS4Auth
 
 from entity_disambiguator_py.model import (
     GetAliasesResponse,
+    GetAliasResponse,
     GetConceptInfoResponse,
     GetConceptResponse,
     GraphTraversalResponse,
@@ -76,13 +77,13 @@ class EntityDisambiguatorLambdaClient:
     def rpc_call(self, payload: dict) -> Response:
         return self._post_request(self.rpc_url, payload)
 
-    def get_alias_id(self, alias_id: str, call_id: int = 1) -> GetAliasesResponse:
+    def get_alias_id(self, alias_id: str, call_id: int = 1) -> GetAliasResponse:
         payload = {"id": call_id, "method": "get_alias_id", "params": {"id": alias_id}}
         r = self.rpc_call(payload)
         if r.status_code != 200:
             raise HTTPError(f"status: {r.status_code} error in get_alias_id")
 
-        return GetAliasesResponse.model_validate_json(r.content)
+        return GetAliasResponse.model_validate_json(r.content)
 
     def get_aliases(self, name: str, call_id: int = 1) -> GetAliasesResponse:
         payload = {"id": call_id, "method": "get_aliases", "params": {"id": name}}
