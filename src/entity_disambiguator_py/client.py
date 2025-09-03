@@ -3,8 +3,8 @@ from urllib.parse import urljoin
 
 import boto3
 import requests
-from requests.models import Response
 from requests.exceptions import HTTPError
+from requests.models import Response
 from requests_aws4auth import AWS4Auth
 
 from entity_disambiguator_py.model import (
@@ -18,6 +18,7 @@ from entity_disambiguator_py.model import (
     SynonymsResponse,
 )
 
+
 class NoSynonymsFound(Exception):
     def __init__(self, cid: str):
         self.message = f"No synonyms for {cid}"
@@ -29,14 +30,11 @@ def get_current_credentials():
     creds = sess.get_credentials()
 
     if creds is None:
-        raise PermissionError(
-            "No credentials found, make sure you're logged in with AWS SSO"
-        )
+        raise PermissionError("No credentials found, make sure you're logged in with AWS SSO")
     return creds
 
 
 class EntityDisambiguatorLambdaClient:
-
     def __init__(self, lambda_url: str, region: str) -> None:
         self.headers = {"Accept": "application/xml", "Content-Type": "application/json"}
         self.url = lambda_url
@@ -78,6 +76,14 @@ class EntityDisambiguatorLambdaClient:
     def rpc_call(self, payload: dict) -> Response:
         return self._post_request(self.rpc_url, payload)
 
+    def get_alias_id(self, alias_id: str, call_id: int = 1) -> GetAliasesResponse:
+        payload = {"id": call_id, "method": "get_alias_id", "params": {"id": alias_id}}
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_alias_id")
+
+        return GetAliasesResponse.model_validate_json(r.content)
+
     def get_aliases(self, name: str, call_id: int = 1) -> GetAliasesResponse:
         payload = {"id": call_id, "method": "get_aliases", "params": {"id": name}}
 
@@ -105,9 +111,7 @@ class EntityDisambiguatorLambdaClient:
 
         return GetConceptResponse.model_validate_json(r.content)
 
-    def get_concept_info(
-        self, concept_id: str, call_id: int = 1
-    ) -> GetConceptInfoResponse:
+    def get_concept_info(self, concept_id: str, call_id: int = 1) -> GetConceptInfoResponse:
         payload = {
             "id": call_id,
             "method": "get_concept_info",
@@ -119,9 +123,7 @@ class EntityDisambiguatorLambdaClient:
 
         return GetConceptInfoResponse.model_validate_json(r.content)
 
-    def get_parents(
-        self, umls_id: str, sort_prefix: str, call_id: int
-    ) -> GraphTraversalResponse:
+    def get_parents(self, umls_id: str, sort_prefix: str, call_id: int) -> GraphTraversalResponse:
         try:
             _ = RelationshipType[sort_prefix]
         except KeyError:
@@ -141,9 +143,7 @@ class EntityDisambiguatorLambdaClient:
 
         return GraphTraversalResponse.model_validate(content)
 
-    def get_children(
-        self, umls_id: str, sort_prefix: str, call_id: int
-    ) -> GraphTraversalResponse:
+    def get_children(self, umls_id: str, sort_prefix: str, call_id: int) -> GraphTraversalResponse:
         try:
             _ = RelationshipType[sort_prefix]
         except KeyError:
@@ -163,9 +163,7 @@ class EntityDisambiguatorLambdaClient:
 
         return GraphTraversalResponse.model_validate(content)
 
-    def get_subgraph(
-        self, umls_id: str, sort_prefix: str, call_id: int
-    ) -> GraphTraversalResponse:
+    def get_subgraph(self, umls_id: str, sort_prefix: str, call_id: int) -> GraphTraversalResponse:
         try:
             _ = RelationshipType[sort_prefix]
         except KeyError:

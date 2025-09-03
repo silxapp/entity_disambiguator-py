@@ -21,6 +21,11 @@ class MessageResponse(BaseModel):
     message: str
 
 
+class GetAliasResponse(BaseModel):
+    id: int
+    result: UMLSAtom
+
+
 class GetAliasesResponse(BaseModel):
     id: int
     result: list[UMLSAtom]
