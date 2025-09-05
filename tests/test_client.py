@@ -59,9 +59,17 @@ def test_get_parents():
     r = client.get_parents("C0699142", sort_prefix="PRED", call_id=1)
     assert len(r.edges) == 8
 
+    r = client.get_parents("C0699142", sort_prefix="SYN", call_id=1)
+    print(r)
+
 
 def test_get_childred():
     # tylenol
     r = client.get_children("C0699142", sort_prefix="SYN", call_id=1)
     print(r)
     assert len(r.edges) == 4
+
+
+def test_get_neighbors():
+    r = client.get_neighbors("C0000970", sort_prefix="SYN", call_id=1)
+    print(r)

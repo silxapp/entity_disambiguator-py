@@ -11,6 +11,7 @@ from entity_disambiguator_py.model import (
     GetAliasesResponse,
     GetConceptInfoResponse,
     GetConceptResponse,
+    GetNeighborsResponse,
     GraphTraversalResponse,
     ListConceptResponse,
     MessageResponse,
@@ -128,7 +129,7 @@ class EntityDisambiguatorLambdaClient:
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_concept")
+            raise HTTPError(f"status: {r.status_code} error in get_parent {r.content}")
 
         content = json.loads(r.content)
         content = {"id": content["id"], "edges": content["result"]["edges"]}
@@ -150,12 +151,31 @@ class EntityDisambiguatorLambdaClient:
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_concept")
+            raise HTTPError(
+                f"status: {r.status_code} error in get_children {r.content}"
+            )
 
         content = json.loads(r.content)
         content = {"id": content["id"], "edges": content["result"]["edges"]}
 
         return GraphTraversalResponse.model_validate(content)
+
+    def get_neighbors(
+        self, umls_id: str, sort_prefix: str, call_id: int = 1
+    ) -> GetNeighborsResponse:
+        payload = {
+            "id": call_id,
+            "method": "get_neighbors",
+            "params": {"query": {"partition_key": umls_id, "sort_key": sort_prefix}},
+        }
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(
+                f"status: {r.status_code} error in get_children {r.content}"
+            )
+
+        content = json.loads(r.content)
+        return GetNeighborsResponse.model_validate(content)
 
     def get_subgraph(
         self, umls_id: str, sort_prefix: str, call_id: int

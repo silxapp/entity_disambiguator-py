@@ -17,6 +17,19 @@ class UMLSConcept(BaseModel):
     definition: Optional[str]
 
 
+class UMLSRelationship(BaseModel):
+    parent: str
+    child: str
+    rel_type: str
+    umls_primary: Optional[str]
+    umls_secondary: Optional[str]
+
+
+class GetNeighborsResponse(BaseModel):
+    id: int
+    result: list[UMLSRelationship]
+
+
 class MessageResponse(BaseModel):
     message: str
 
