@@ -32,7 +32,9 @@ def get_current_credentials():
     creds = sess.get_credentials()
 
     if creds is None:
-        raise PermissionError("No credentials found, make sure you're logged in with AWS SSO")
+        raise PermissionError(
+            "No credentials found, make sure you're logged in with AWS SSO"
+        )
     return creds
 
 
@@ -113,7 +115,9 @@ class EntityDisambiguatorLambdaClient:
 
         return GetConceptResponse.model_validate_json(r.content)
 
-    def get_concept_info(self, concept_id: str, call_id: int = 1) -> GetConceptInfoResponse:
+    def get_concept_info(
+        self, concept_id: str, call_id: int = 1
+    ) -> GetConceptInfoResponse:
         payload = {
             "id": call_id,
             "method": "get_concept_info",
@@ -125,7 +129,9 @@ class EntityDisambiguatorLambdaClient:
 
         return GetConceptInfoResponse.model_validate_json(r.content)
 
-    def get_parents(self, umls_id: str, sort_prefix: str, call_id: int) -> GraphTraversalResponse:
+    def get_parents(
+        self, umls_id: str, sort_prefix: str, call_id: int
+    ) -> GraphTraversalResponse:
         try:
             _ = RelationshipType[sort_prefix]
         except KeyError:
@@ -145,7 +151,9 @@ class EntityDisambiguatorLambdaClient:
 
         return GraphTraversalResponse.model_validate(content)
 
-    def get_children(self, umls_id: str, sort_prefix: str, call_id: int) -> GraphTraversalResponse:
+    def get_children(
+        self, umls_id: str, sort_prefix: str, call_id: int
+    ) -> GraphTraversalResponse:
         try:
             _ = RelationshipType[sort_prefix]
         except KeyError:
