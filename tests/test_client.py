@@ -3,7 +3,9 @@ import json
 from pathlib import Path
 from dotenv import dotenv_values
 
-from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient
+import pytest
+
+from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient, NoSynonymsFound
 
 
 config = dotenv_values("test.env")
@@ -63,10 +65,9 @@ def test_get_parents():
     print(r)
 
 
-def test_get_childred():
+def test_get_children():
     # tylenol
     r = client.get_children("C0699142", sort_prefix="SYN", call_id=1)
-    print(r)
     assert len(r.edges) == 4
 
 

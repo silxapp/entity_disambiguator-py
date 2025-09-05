@@ -34,6 +34,11 @@ class MessageResponse(BaseModel):
     message: str
 
 
+class GetAliasResponse(BaseModel):
+    id: int
+    result: UMLSAtom
+
+
 class GetAliasesResponse(BaseModel):
     id: int
     result: list[UMLSAtom]
@@ -77,3 +82,8 @@ class Relationship(BaseModel):
 class GraphTraversalResponse(BaseModel):
     id: int
     edges: list[Relationship]
+
+
+class SynonymsResponse(BaseModel):
+    id: int
+    subgraph: list[str]
