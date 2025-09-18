@@ -1,12 +1,10 @@
-import os
 import json
+import os
 from pathlib import Path
+
 from dotenv import dotenv_values
 
-import pytest
-
-from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient, NoSynonymsFound
-
+from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient
 
 config = dotenv_values("test.env")
 lambda_url = config["URL"]
@@ -38,9 +36,7 @@ def test_say_hello():
 
 
 def test_concept_rpc():
-    test_directory = Path(os.path.abspath(os.path.dirname(__file__))).joinpath(
-        "test_payloads"
-    )
+    test_directory = Path(os.path.abspath(os.path.dirname(__file__))).joinpath("test_payloads")
 
     __run_rpc(test_directory.joinpath("concept_post.json"))
     __run_rpc(test_directory.joinpath("alias_name_post.json"))
@@ -56,19 +52,29 @@ def test_get_aliases():
     assert len(r.result) == 0
 
 
-def test_get_parents():
+def test_get_ancestors():
     # tylenol
-    r = client.get_parents("C0699142", sort_prefix="PRED", call_id=1)
+    r = client.get_ancestors("C0699142", sort_prefix="PRED", call_id=1)
     assert len(r.edges) == 8
 
-    r = client.get_parents("C0699142", sort_prefix="SYN", call_id=1)
+    r = client.get_ancestors("C0699142", sort_prefix="SYN", call_id=1)
     print(r)
 
 
-def test_get_children():
+def test_get_descendants():
     # tylenol
-    r = client.get_children("C0699142", sort_prefix="SYN", call_id=1)
+    r = client.get_descendants("C0699142", sort_prefix="SYN", call_id=1)
     assert len(r.edges) == 4
+
+
+def test_get_parents():
+    r = client.get_parents("C0699142", sort_prefix="SYN", call_id=1)
+    assert r.edges[0].parent == "SYN#C0000970"
+
+
+def test_get_children():
+    r = client.get_children("C0699142", sort_prefix="SYN", call_id=2)
+    assert r.edges[0].child == "SYN#C0000970"
 
 
 def test_get_neighbors():

@@ -12,6 +12,7 @@ from entity_disambiguator_py.model import (
     GetAliasResponse,
     GetConceptInfoResponse,
     GetConceptResponse,
+    GetFamilyResponse,
     GetNeighborsResponse,
     GraphTraversalResponse,
     ListConceptResponse,
@@ -32,9 +33,7 @@ def get_current_credentials():
     creds = sess.get_credentials()
 
     if creds is None:
-        raise PermissionError(
-            "No credentials found, make sure you're logged in with AWS SSO"
-        )
+        raise PermissionError("No credentials found, make sure you're logged in with AWS SSO")
     return creds
 
 
@@ -115,9 +114,7 @@ class EntityDisambiguatorLambdaClient:
 
         return GetConceptResponse.model_validate_json(r.content)
 
-    def get_concept_info(
-        self, concept_id: str, call_id: int = 1
-    ) -> GetConceptInfoResponse:
+    def get_concept_info(self, concept_id: str, call_id: int = 1) -> GetConceptInfoResponse:
         payload = {
             "id": call_id,
             "method": "get_concept_info",
@@ -129,9 +126,49 @@ class EntityDisambiguatorLambdaClient:
 
         return GetConceptInfoResponse.model_validate_json(r.content)
 
-    def get_parents(
+    def get_ancestors(self, umls_id: str, sort_prefix: str, call_id: int) -> GraphTraversalResponse:
+        try:
+            _ = RelationshipType[sort_prefix]
+        except KeyError:
+            raise HTTPError(f"Invalid sort prefix {sort_prefix}")
+
+        payload = {
+            "id": call_id,
+            "method": "get_ancestors",
+            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
+        }
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_children {r.content}")
+
+        content = json.loads(r.content)
+        content = {"id": content["id"], "edges": content["result"]["edges"]}
+
+        return GraphTraversalResponse.model_validate(content)
+
+    def get_descendants(
         self, umls_id: str, sort_prefix: str, call_id: int
     ) -> GraphTraversalResponse:
+        try:
+            _ = RelationshipType[sort_prefix]
+        except KeyError:
+            raise HTTPError(f"Invalid sort prefix {sort_prefix}")
+
+        payload = {
+            "id": call_id,
+            "method": "get_descendants",
+            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
+        }
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_children {r.content}")
+
+        content = json.loads(r.content)
+        content = {"id": content["id"], "edges": content["result"]["edges"]}
+
+        return GraphTraversalResponse.model_validate(content)
+
+    def get_parents(self, umls_id: str, sort_prefix: str, call_id: int) -> GetFamilyResponse:
         try:
             _ = RelationshipType[sort_prefix]
         except KeyError:
@@ -140,20 +177,18 @@ class EntityDisambiguatorLambdaClient:
         payload = {
             "id": call_id,
             "method": "get_parents",
-            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
+            "params": {"query": {"partition_key": umls_id, "sort_key": sort_prefix}},
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
             raise HTTPError(f"status: {r.status_code} error in get_parent {r.content}")
 
         content = json.loads(r.content)
-        content = {"id": content["id"], "edges": content["result"]["edges"]}
+        content = {"id": content["id"], "edges": content["result"]}
 
-        return GraphTraversalResponse.model_validate(content)
+        return GetFamilyResponse.model_validate(content)
 
-    def get_children(
-        self, umls_id: str, sort_prefix: str, call_id: int
-    ) -> GraphTraversalResponse:
+    def get_children(self, umls_id: str, sort_prefix: str, call_id: int) -> GetFamilyResponse:
         try:
             _ = RelationshipType[sort_prefix]
         except KeyError:
@@ -162,18 +197,16 @@ class EntityDisambiguatorLambdaClient:
         payload = {
             "id": call_id,
             "method": "get_children",
-            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
+            "params": {"query": {"partition_key": umls_id, "sort_key": sort_prefix}},
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(
-                f"status: {r.status_code} error in get_children {r.content}"
-            )
+            raise HTTPError(f"status: {r.status_code} error in get_children {r.content}")
 
         content = json.loads(r.content)
-        content = {"id": content["id"], "edges": content["result"]["edges"]}
+        content = {"id": content["id"], "edges": content["result"]}
 
-        return GraphTraversalResponse.model_validate(content)
+        return GetFamilyResponse.model_validate(content)
 
     def get_neighbors(
         self, umls_id: str, sort_prefix: str, call_id: int = 1
@@ -185,16 +218,12 @@ class EntityDisambiguatorLambdaClient:
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(
-                f"status: {r.status_code} error in get_children {r.content}"
-            )
+            raise HTTPError(f"status: {r.status_code} error in get_children {r.content}")
 
         content = json.loads(r.content)
         return GetNeighborsResponse.model_validate(content)
 
-    def get_subgraph(
-        self, umls_id: str, sort_prefix: str, call_id: int
-    ) -> GraphTraversalResponse:
+    def get_subgraph(self, umls_id: str, sort_prefix: str, call_id: int) -> GraphTraversalResponse:
         try:
             _ = RelationshipType[sort_prefix]
         except KeyError:

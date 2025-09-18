@@ -30,6 +30,11 @@ class GetNeighborsResponse(BaseModel):
     result: list[UMLSRelationship]
 
 
+class GetFamilyResponse(BaseModel):
+    id: int
+    edges: list[UMLSRelationship]
+
+
 class MessageResponse(BaseModel):
     message: str
 
