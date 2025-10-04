@@ -1,18 +1,11 @@
 import json
 import os
 from pathlib import Path
-<<<<<<< HEAD
 
 import pytest
 from dotenv import dotenv_values
 
 from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient, NoSynonymsFound
-=======
-
-from dotenv import dotenv_values
-
-from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient
->>>>>>> e865f7d9ce30c5b8f24a9728143192fc47faf938
 
 config = dotenv_values("test.env")
 lambda_url = config["URL"]
