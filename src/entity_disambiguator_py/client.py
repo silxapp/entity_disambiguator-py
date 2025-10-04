@@ -8,6 +8,7 @@ from requests.models import Response
 from requests_aws4auth import AWS4Auth
 
 from entity_disambiguator_py.model import (
+    CanonicalSynonymsResponse,
     GetAliasesResponse,
     GetAliasResponse,
     GetConceptInfoResponse,
@@ -16,7 +17,7 @@ from entity_disambiguator_py.model import (
     ListConceptResponse,
     MessageResponse,
     RelationshipType,
-    SynonymsResponse,
+    SynonymSetResponse,
 )
 
 
@@ -133,14 +134,14 @@ class EntityDisambiguatorLambdaClient:
         payload = {
             "id": call_id,
             "method": "get_parents",
-            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
+            "params": {"query": {"partition_key": umls_id, "sort_key": sort_prefix}},
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_concept")
+            raise HTTPError(f"status: {r.status_code} error in get_parents")
 
         content = json.loads(r.content)
-        content = {"id": content["id"], "edges": content["result"]["edges"]}
+        content = {"id": content["id"], "edges": content["result"]}
 
         return GraphTraversalResponse.model_validate(content)
 
@@ -153,14 +154,14 @@ class EntityDisambiguatorLambdaClient:
         payload = {
             "id": call_id,
             "method": "get_children",
-            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
+            "params": {"query": {"partition_key": umls_id, "sort_key": sort_prefix}},
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_concept")
+            raise HTTPError(f"status: {r.status_code} error in get_children")
 
         content = json.loads(r.content)
-        content = {"id": content["id"], "edges": content["result"]["edges"]}
+        content = {"id": content["id"], "edges": content["result"]}
 
         return GraphTraversalResponse.model_validate(content)
 
@@ -177,17 +178,17 @@ class EntityDisambiguatorLambdaClient:
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_concept")
+            raise HTTPError(f"status: {r.status_code} error in get_subgraph")
 
         content = json.loads(r.content)
         content = {"id": content["id"], "edges": content["result"]["edges"]}
 
         return GraphTraversalResponse.model_validate(content)
 
-    def get_synonyms(self, cid: str, call_id: int = 1) -> SynonymsResponse:
+    def get_canonical_synonym(self, cid: str, call_id: int = 1) -> CanonicalSynonymsResponse:
         payload = {
             "id": call_id,
-            "method": "get_synonyms",
+            "method": "get_canonical_synonym",
             "params": {"id": cid},
         }
         r = self.rpc_call(payload)
@@ -198,6 +199,20 @@ class EntityDisambiguatorLambdaClient:
             raise HTTPError(f"status: {r.status_code} error in get_synonyms")
 
         content = json.loads(r.content)
-        content = {"id": content["id"], "subgraph": content["result"]["subgraph"]}
+        return CanonicalSynonymsResponse.model_validate(content)
 
-        return SynonymsResponse.model_validate(content)
+    def get_synonym_set(self, ssid: str, call_id: int = 1) -> SynonymSetResponse:
+        payload = {
+            "id": call_id,
+            "method": "get_synonym_subgraph",
+            "params": {"id": ssid},
+        }
+        r = self.rpc_call(payload)
+        if r.status_code == 404:
+            raise NoSynonymsFound(ssid)
+
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_synonyms")
+
+        content = json.loads(r.content)
+        return SynonymSetResponse.model_validate(content)

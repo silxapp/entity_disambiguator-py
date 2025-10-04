@@ -71,6 +71,22 @@ class GraphTraversalResponse(BaseModel):
     edges: list[Relationship]
 
 
-class SynonymsResponse(BaseModel):
+class CanonicalSynonym(BaseModel):
+    cui_id: str
+    canonical_cui: str
+    synset_id: str
+
+
+class CanonicalSynonymsResponse(BaseModel):
     id: int
+    result: CanonicalSynonym
+
+
+class SynonymSet(BaseModel):
+    synset_id: str
     subgraph: list[str]
+
+
+class SynonymSetResponse(BaseModel):
+    id: int
+    result: SynonymSet

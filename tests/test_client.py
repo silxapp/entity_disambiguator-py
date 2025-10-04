@@ -1,12 +1,11 @@
-import os
 import json
+import os
 from pathlib import Path
-from dotenv import dotenv_values
 
 import pytest
+from dotenv import dotenv_values
 
 from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient, NoSynonymsFound
-
 
 config = dotenv_values("test.env")
 lambda_url = config["URL"]
@@ -38,9 +37,7 @@ def test_say_hello():
 
 
 def test_concept_rpc():
-    test_directory = Path(os.path.abspath(os.path.dirname(__file__))).joinpath(
-        "test_payloads"
-    )
+    test_directory = Path(os.path.abspath(os.path.dirname(__file__))).joinpath("test_payloads")
 
     __run_rpc(test_directory.joinpath("concept_post.json"))
     __run_rpc(test_directory.joinpath("alias_name_post.json"))
@@ -59,18 +56,23 @@ def test_get_aliases():
 def test_get_parents():
     # tylenol
     r = client.get_parents("C0699142", sort_prefix="PRED", call_id=1)
-    assert len(r.edges) == 8
+    print(r)
+    assert len(r.edges) == 2
 
 
 def test_get_children():
     # tylenol
     r = client.get_children("C0699142", sort_prefix="SYN", call_id=1)
-    assert len(r.edges) == 4
+    assert len(r.edges) == 1
 
 
 def test_get_synonyms():
-    r = client.get_synonyms("C3556763")
-    assert "C3556764" in r.subgraph
+    r = client.get_canonical_synonym("C3556763")
+    assert r.result.canonical_cui == "C3556763"
 
     with pytest.raises(NoSynonymsFound):
-        _ = client.get_synonyms("not in graph")
+        _ = client.get_canonical_synonym("not in graph")
+
+    r = client.get_synonym_set(r.result.synset_id)
+    assert "C3556763" in r.result.subgraph
+    assert len(r.result.subgraph) == 2
