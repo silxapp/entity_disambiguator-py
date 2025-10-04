@@ -1,11 +1,18 @@
 import json
 import os
 from pathlib import Path
+<<<<<<< HEAD
 
 import pytest
 from dotenv import dotenv_values
 
 from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient, NoSynonymsFound
+=======
+
+from dotenv import dotenv_values
+
+from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient
+>>>>>>> e865f7d9ce30c5b8f24a9728143192fc47faf938
 
 config = dotenv_values("test.env")
 lambda_url = config["URL"]
@@ -53,14 +60,17 @@ def test_get_aliases():
     assert len(r.result) == 0
 
 
-def test_get_parents():
+def test_get_ancestors():
     # tylenol
     r = client.get_parents("C0699142", sort_prefix="PRED", call_id=1)
     print(r)
     assert len(r.edges) == 2
 
+    r = client.get_ancestors("C0699142", sort_prefix="SYN", call_id=1)
+    print(r)
 
-def test_get_children():
+
+def test_get_descendants():
     # tylenol
     r = client.get_children("C0699142", sort_prefix="SYN", call_id=1)
     assert len(r.edges) == 1
