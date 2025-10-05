@@ -1,4 +1,5 @@
 import json
+import logging
 from urllib.parse import urljoin
 
 import boto3
@@ -8,6 +9,7 @@ from requests.models import Response
 from requests_aws4auth import AWS4Auth
 
 from entity_disambiguator_py.model import (
+    CanonicalSynonym,
     CanonicalSynonymsResponse,
     GetAliasesResponse,
     GetAliasResponse,
@@ -21,6 +23,8 @@ from entity_disambiguator_py.model import (
     RelationshipType,
     SynonymSetResponse,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class NoSynonymsFound(Exception):
@@ -252,7 +256,10 @@ class EntityDisambiguatorLambdaClient:
         }
         r = self.rpc_call(payload)
         if r.status_code == 404:
-            raise NoSynonymsFound(cid)
+            logger.debug(f"no synonyms found for {cid}")
+            return CanonicalSynonymsResponse(
+                id=call_id, result=CanonicalSynonym(cui_id=cid, canonical_cui=cid, synset_id="-1")
+            )
 
         if r.status_code != 200:
             raise HTTPError(f"status: {r.status_code} error in get_synonyms")
@@ -268,6 +275,7 @@ class EntityDisambiguatorLambdaClient:
         }
         r = self.rpc_call(payload)
         if r.status_code == 404:
+            logger.debug(f"no synonyms found for {ssid}")
             raise NoSynonymsFound(ssid)
 
         if r.status_code != 200:
