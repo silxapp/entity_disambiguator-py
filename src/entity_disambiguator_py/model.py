@@ -65,6 +65,14 @@ class GetConceptInfoResponse(BaseModel):
     alias_names: list[str]
 
 
+class DocDBRelationship(BaseModel):
+    parent: str
+    child: str
+    rel_type: str
+    umls_primary: Optional[str]
+    umls_secondary: Optional[str]
+
+
 class RelationshipType(Enum):
     SYN = 1
     PRED = 2

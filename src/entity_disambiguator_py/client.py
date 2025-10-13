@@ -11,6 +11,7 @@ from requests_aws4auth import AWS4Auth
 from entity_disambiguator_py.model import (
     CanonicalSynonym,
     CanonicalSynonymsResponse,
+    DocDBRelationship,
     GetAliasesResponse,
     GetAliasResponse,
     GetConceptInfoResponse,
@@ -283,3 +284,11 @@ class EntityDisambiguatorLambdaClient:
 
         content = json.loads(r.content)
         return SynonymSetResponse.model_validate(content)
+
+    def create_relationship(self, relationship: DocDBRelationship) -> None:
+        payload = relationship.model_dump()
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in ")
+        content = json.loads(r.content)
+        logger.info(f"response {content}")
