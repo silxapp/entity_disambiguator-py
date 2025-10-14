@@ -78,7 +78,7 @@ class EntityDisambiguatorLambdaClient:
         url = self.url + "/"
         r = self._get_request(url)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in say_hello")
+            raise HTTPError(f"status: {r.status_code} error in say_hello {r.content}")
 
         return MessageResponse(message=r.content.decode())
 
@@ -89,7 +89,7 @@ class EntityDisambiguatorLambdaClient:
         payload = {"id": call_id, "method": "get_alias_id", "params": {"id": alias_id}}
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_alias_id")
+            raise HTTPError(f"status: {r.status_code} error in get_alias_id {r.content}")
 
         return GetAliasResponse.model_validate_json(r.content)
 
@@ -101,7 +101,7 @@ class EntityDisambiguatorLambdaClient:
             return GetAliasesResponse(id=call_id, result=[])
 
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_aliases")
+            raise HTTPError(f"status: {r.status_code} error in get_aliases {r.content}")
 
         return GetAliasesResponse.model_validate_json(r.content)
 
@@ -109,14 +109,14 @@ class EntityDisambiguatorLambdaClient:
         payload = {"id": call_id, "method": "list_concepts"}
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in list_concept")
+            raise HTTPError(f"status: {r.status_code} error in list_concept {r.content}")
         return ListConceptResponse.model_validate_json(r.content)
 
     def get_concept(self, concept_id: str, call_id: int = 1) -> GetConceptResponse:
         payload = {"id": call_id, "method": "get_concept", "params": {"id": concept_id}}
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_concept")
+            raise HTTPError(f"status: {r.status_code} error in get_concept {r.content}")
 
         return GetConceptResponse.model_validate_json(r.content)
 
@@ -128,7 +128,7 @@ class EntityDisambiguatorLambdaClient:
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_concept")
+            raise HTTPError(f"status: {r.status_code} error in get_concept {r.content}")
 
         return GetConceptInfoResponse.model_validate_json(r.content)
 
@@ -242,7 +242,7 @@ class EntityDisambiguatorLambdaClient:
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_subgraph")
+            raise HTTPError(f"status: {r.status_code} error in get_subgraph {r.content}")
 
         content = json.loads(r.content)
         content = {"id": content["id"], "edges": content["result"]["edges"]}
@@ -263,7 +263,7 @@ class EntityDisambiguatorLambdaClient:
             )
 
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_synonyms")
+            raise HTTPError(f"status: {r.status_code} error in get_synonyms {r.content}")
 
         content = json.loads(r.content)
         return CanonicalSynonymsResponse.model_validate(content)
@@ -280,7 +280,7 @@ class EntityDisambiguatorLambdaClient:
             raise NoSynonymsFound(ssid)
 
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in get_synonyms")
+            raise HTTPError(f"status: {r.status_code} error in get_synonyms {r.content}")
 
         content = json.loads(r.content)
         return SynonymSetResponse.model_validate(content)
@@ -289,7 +289,7 @@ class EntityDisambiguatorLambdaClient:
         payload = relationship.model_dump()
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in create relationship")
+            raise HTTPError(f"status: {r.status_code} error in create relationship {r.content}")
 
         content = json.loads(r.content)
         logger.info(f"response {content}")
