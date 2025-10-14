@@ -285,8 +285,13 @@ class EntityDisambiguatorLambdaClient:
         content = json.loads(r.content)
         return SynonymSetResponse.model_validate(content)
 
-    def create_relationship(self, relationship: DocDBRelationship) -> None:
-        payload = relationship.model_dump()
+    def create_relationship(self, relationship: DocDBRelationship, call_id: int = 1) -> None:
+        relationship_dict = relationship.model_dump()
+        payload = {
+            "id": call_id,
+            "method": "create_relationship",
+            "params": {"data": relationship_dict},
+        }
         r = self.rpc_call(payload)
         if r.status_code != 200:
             raise HTTPError(f"status: {r.status_code} error in create relationship {r.content}")
