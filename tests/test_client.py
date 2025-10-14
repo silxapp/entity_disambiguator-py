@@ -2,10 +2,9 @@ import json
 import os
 from pathlib import Path
 
-import pytest
 from dotenv import dotenv_values
 
-from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient, NoSynonymsFound
+from entity_disambiguator_py.client import EntityDisambiguatorLambdaClient
 
 config = dotenv_values("test.env")
 lambda_url = config["URL"]
@@ -73,8 +72,8 @@ def test_get_synonyms():
     r = client.get_canonical_synonym("C3556763")
     assert r.result.canonical_cui == "C3556763"
 
-    with pytest.raises(NoSynonymsFound):
-        _ = client.get_canonical_synonym("not in graph")
+    s = client.get_canonical_synonym("not in graph")
+    assert s.result.synset_id == "-1"
 
     r = client.get_synonym_set(r.result.synset_id)
     assert "C3556763" in r.result.subgraph

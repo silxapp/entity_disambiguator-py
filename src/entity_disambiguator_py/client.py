@@ -183,7 +183,7 @@ class EntityDisambiguatorLambdaClient:
         payload = {
             "id": call_id,
             "method": "get_parents",
-            "params": {"query": {"partition_key": umls_id, "sort_key": sort_prefix}},
+            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
@@ -203,7 +203,7 @@ class EntityDisambiguatorLambdaClient:
         payload = {
             "id": call_id,
             "method": "get_children",
-            "params": {"query": {"partition_key": umls_id, "sort_key": sort_prefix}},
+            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
@@ -220,7 +220,7 @@ class EntityDisambiguatorLambdaClient:
         payload = {
             "id": call_id,
             "method": "get_neighbors",
-            "params": {"query": {"partition_key": umls_id, "sort_key": sort_prefix}},
+            "params": {"query": {"start_node": umls_id, "sort_prefix": sort_prefix}},
         }
         r = self.rpc_call(payload)
         if r.status_code != 200:
@@ -289,6 +289,7 @@ class EntityDisambiguatorLambdaClient:
         payload = relationship.model_dump()
         r = self.rpc_call(payload)
         if r.status_code != 200:
-            raise HTTPError(f"status: {r.status_code} error in ")
+            raise HTTPError(f"status: {r.status_code} error in create relationship")
+
         content = json.loads(r.content)
         logger.info(f"response {content}")
