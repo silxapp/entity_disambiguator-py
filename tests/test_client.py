@@ -54,17 +54,17 @@ def test_get_aliases():
 
 def test_get_ancestors():
     # tylenol
-    r = client.get_parents("C0699142", sort_prefix="PRED", call_id=1)
+    r = client.get_parents("C0699142", sort_prefix="PRED")
     print(r)
     assert len(r.edges) == 2
 
-    r = client.get_ancestors("C0699142", sort_prefix="SYN", call_id=1)
+    r = client.get_ancestors("C0699142", sort_prefix="SYN")
     print(r)
 
 
 def test_get_descendants():
     # tylenol
-    r = client.get_children("C0699142", sort_prefix="SYN", call_id=1)
+    r = client.get_children("C0699142", sort_prefix="SYN")
     assert len(r.edges) == 1
 
 
