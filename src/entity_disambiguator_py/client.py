@@ -298,3 +298,14 @@ class EntityDisambiguatorLambdaClient:
 
         content = json.loads(r.content)
         logger.info(f"response {content}")
+
+    def reset_cache(self, call_id: int = 1) -> MessageResponse:
+        payload = {
+            "id": call_id,
+            "method": "reset_cache",
+        }
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in reset cache {r.content}")
+
+        return MessageResponse(message=r.content.decode())
