@@ -8,6 +8,7 @@ class UMLSAtom(BaseModel):
     atom_id: str
     concept_id: str
     name: str
+    source: str
 
 
 class UMLSConcept(BaseModel):

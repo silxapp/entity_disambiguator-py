@@ -103,6 +103,7 @@ class EntityDisambiguatorLambdaClient:
 
         if r.status_code != 200:
             raise HTTPError(f"status: {r.status_code} error in get_aliases {r.content}")
+        print(r.content)
 
         return GetAliasesResponse.model_validate_json(r.content)
 

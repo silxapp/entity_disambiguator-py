@@ -77,4 +77,4 @@ def test_get_synonyms():
 
     r = client.get_synonym_set(r.result.synset_id)
     assert "C3556763" in r.result.subgraph
-    assert len(r.result.subgraph) == 2
+    assert len(r.result.subgraph) == 3
