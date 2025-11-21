@@ -45,6 +45,11 @@ class GetAliasResponse(BaseModel):
     result: UMLSAtom
 
 
+class BatchGetAliasResponse(BaseModel):
+    id: int
+    result: list[UMLSAtom]
+
+
 class GetAliasesResponse(BaseModel):
     id: int
     result: list[UMLSAtom]

@@ -9,6 +9,7 @@ from requests.models import Response
 from requests_aws4auth import AWS4Auth
 
 from entity_disambiguator_py.model import (
+    BatchGetAliasResponse,
     CanonicalSynonym,
     CanonicalSynonymsResponse,
     DocDBRelationship,
@@ -93,6 +94,14 @@ class EntityDisambiguatorLambdaClient:
             raise HTTPError(f"status: {r.status_code} error in get_alias_id {r.content}")
 
         return GetAliasResponse.model_validate_json(r.content)
+
+    def get_batch_alias_id(self, alias_ids: list[str]) -> BatchGetAliasResponse:
+        payload = {"id": self.call_id, "method": "batch_get_alias_id", "params": {"ids": alias_ids}}
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in batch_get_alias_id {r.content}")
+
+        return BatchGetAliasResponse.model_validate_json(r.content)
 
     def get_aliases(self, name: str) -> GetAliasesResponse:
         payload = {"id": self.call_id, "method": "get_aliases", "params": {"id": name}}

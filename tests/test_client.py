@@ -43,6 +43,17 @@ def test_concept_rpc():
     __run_rpc(test_directory.joinpath("alias_id_post.json"))
 
 
+def test_get_alias_id():
+    r = client.get_alias_id("A8401600")
+    assert r.result.concept_id == "C1453225"
+
+
+def test_batch_get_alias_id():
+    ids = ["A8401600", "A33336372"]
+    r = client.get_batch_alias_id(ids)
+    assert len(r.result) == 2
+
+
 def test_get_aliases():
     r = client.get_aliases("magnovatin b")
     assert len(r.result) == 1
