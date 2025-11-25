@@ -50,11 +50,6 @@ class GetTypeDefinitionResponse(BaseModel):
     result: UMLSTypeDefinition
 
 
-class GetFamilyResponse(BaseModel):
-    id: int
-    edges: list[UMLSRelationship]
-
-
 class MessageResponse(BaseModel):
     message: str
 
