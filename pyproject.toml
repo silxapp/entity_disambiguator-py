@@ -1,6 +1,6 @@
 [project]
 name = "entity-disambiguator-py"
-version = "0.8.0"
+version = "0.8.1"
 description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Michael Samsom", email = "mike.samsom@asica.ca" }]
