@@ -11,6 +11,7 @@ from requests_aws4auth import AWS4Auth
 from entity_disambiguator_py.model import (
     BatchGetAliasNameResponse,
     BatchGetAliasResponse,
+    BatchGetConceptResponse,
     CanonicalSynonym,
     CanonicalSynonymsResponse,
     DocDBRelationship,
@@ -154,6 +155,17 @@ class EntityDisambiguatorLambdaClient:
             raise HTTPError(f"status: {r.status_code} error in get_concept {r.content}")
 
         return GetConceptResponse.model_validate_json(r.content)
+
+    def get_batch_concept(self, concept_ids: list[str]) -> BatchGetConceptResponse:
+        payload = {
+            "id": self.call_id,
+            "method": "batch_get_concept",
+            "params": {"ids": concept_ids},
+        }
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in batch_get_concept {r.content}")
+        return BatchGetConceptResponse.model_validate_json(r.content)
 
     def get_concept_info(self, concept_id: str) -> GetConceptInfoResponse:
         payload = {

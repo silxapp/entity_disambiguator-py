@@ -60,6 +60,17 @@ def test_batch_get_name():
     assert r.result.atom_ids[0] == "A17398278"
 
 
+def test_get_concept():
+    r = client.get_concept("C1453225")
+    assert "A8401600" in r.result.alias_list
+
+
+def test_batch_get_concept():
+    r = client.get_batch_concept(["C2442562", "C1453225"])
+    print(r)
+    assert 1 == 2
+
+
 def test_get_aliases():
     r = client.get_aliases("magnovatin b")
     assert len(r.result) == 1

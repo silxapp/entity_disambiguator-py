@@ -89,6 +89,11 @@ class GetConceptResponse(BaseModel):
     result: UMLSConcept
 
 
+class BatchGetConceptResponse(BaseModel):
+    id: int
+    result: list[UMLSConcept]
+
+
 class ListConceptResponse(BaseModel):
     id: int
     result: list[str]
