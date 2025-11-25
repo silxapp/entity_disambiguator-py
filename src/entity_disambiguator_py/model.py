@@ -32,9 +32,22 @@ class UMLSRelationship(BaseModel):
     umls_secondary: Optional[str]
 
 
+class UMLSTypeDefinition(BaseModel):
+    type_id: str
+    abbreviation: str
+    definition: str
+    is_relation: bool
+    name: str
+
+
 class GetNeighborsResponse(BaseModel):
     id: int
     result: list[UMLSRelationship]
+
+
+class GetTypeDefinitionResponse(BaseModel):
+    id: int
+    result: UMLSTypeDefinition
 
 
 class GetFamilyResponse(BaseModel):

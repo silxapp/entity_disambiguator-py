@@ -21,6 +21,7 @@ from entity_disambiguator_py.model import (
     GetConceptResponse,
     GetFamilyResponse,
     GetNeighborsResponse,
+    GetTypeDefinitionResponse,
     GraphTraversalResponse,
     ListConceptResponse,
     MessageResponse,
@@ -121,9 +122,15 @@ class EntityDisambiguatorLambdaClient:
 
         return BatchGetAliasNameResponse.model_validate_json(r.content)
 
+    def get_type_definition(self, type_id: str) -> GetTypeDefinitionResponse:
+        payload = {"id": self.call_id, "method": "get_type_definition", "params": {"id": type_id}}
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_type_definition {r.content}")
+        return GetTypeDefinitionResponse.model_validate_json(r.content)
+
     def get_aliases(self, name: str) -> GetAliasesResponse:
         payload = {"id": self.call_id, "method": "get_aliases", "params": {"id": name}}
-
         r = self.rpc_call(payload)
         if r.status_code == 404:
             return GetAliasesResponse(id=self.call_id, result=[])
