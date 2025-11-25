@@ -54,6 +54,12 @@ def test_batch_get_alias_id():
     assert len(r.result) == 2
 
 
+def test_batch_get_name():
+    r = client.get_alias_name("magnovatin b")
+    print(r)
+    assert r.result.atom_ids[0] == "A17398278"
+
+
 def test_get_aliases():
     r = client.get_aliases("magnovatin b")
     assert len(r.result) == 1

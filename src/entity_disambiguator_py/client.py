@@ -9,11 +9,13 @@ from requests.models import Response
 from requests_aws4auth import AWS4Auth
 
 from entity_disambiguator_py.model import (
+    BatchGetAliasNameResponse,
     BatchGetAliasResponse,
     CanonicalSynonym,
     CanonicalSynonymsResponse,
     DocDBRelationship,
     GetAliasesResponse,
+    GetAliasNameResponse,
     GetAliasResponse,
     GetConceptInfoResponse,
     GetConceptResponse,
@@ -102,6 +104,22 @@ class EntityDisambiguatorLambdaClient:
             raise HTTPError(f"status: {r.status_code} error in batch_get_alias_id {r.content}")
 
         return BatchGetAliasResponse.model_validate_json(r.content)
+
+    def get_alias_name(self, name: str) -> GetAliasNameResponse:
+        payload = {"id": self.call_id, "method": "get_alias_name", "params": {"id": name}}
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in get_alias_name {r.content}")
+
+        return GetAliasNameResponse.model_validate_json(r.content)
+
+    def get_batch_alias_name(self, names: list[str]) -> BatchGetAliasNameResponse:
+        payload = {"id": self.call_id, "method": "batch_get_alias_name", "params": {"ids": names}}
+        r = self.rpc_call(payload)
+        if r.status_code != 200:
+            raise HTTPError(f"status: {r.status_code} error in batch_get_alias_name {r.content}")
+
+        return BatchGetAliasNameResponse.model_validate_json(r.content)
 
     def get_aliases(self, name: str) -> GetAliasesResponse:
         payload = {"id": self.call_id, "method": "get_aliases", "params": {"id": name}}

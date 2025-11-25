@@ -11,6 +11,12 @@ class UMLSAtom(BaseModel):
     source: str
 
 
+class UMLSAtomName(BaseModel):
+    name: str
+    atom_ids: list[str]
+    concept_ids: list[str]
+
+
 class UMLSConcept(BaseModel):
     concept_id: str
     language: str
@@ -48,6 +54,16 @@ class GetAliasResponse(BaseModel):
 class BatchGetAliasResponse(BaseModel):
     id: int
     result: list[UMLSAtom]
+
+
+class GetAliasNameResponse(BaseModel):
+    id: int
+    result: UMLSAtomName
+
+
+class BatchGetAliasNameResponse(BaseModel):
+    id: int
+    result: list[UMLSAtomName]
 
 
 class GetAliasesResponse(BaseModel):
