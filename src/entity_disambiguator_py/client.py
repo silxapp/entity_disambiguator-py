@@ -20,7 +20,6 @@ from entity_disambiguator_py.model import (
     GetAliasResponse,
     GetConceptInfoResponse,
     GetConceptResponse,
-    GetFamilyResponse,
     GetNeighborsResponse,
     GetTypeDefinitionResponse,
     GraphTraversalResponse,
@@ -219,7 +218,7 @@ class EntityDisambiguatorLambdaClient:
 
         return GraphTraversalResponse.model_validate(content)
 
-    def get_parents(self, umls_id: str, sort_prefix: str) -> GetFamilyResponse:
+    def get_parents(self, umls_id: str, sort_prefix: str) -> GetNeighborsResponse:
         try:
             _ = RelationshipType[sort_prefix]
         except KeyError:
@@ -237,9 +236,9 @@ class EntityDisambiguatorLambdaClient:
         content = json.loads(r.content)
         content = {"id": content["id"], "edges": content["result"]}
 
-        return GetFamilyResponse.model_validate(content)
+        return GetNeighborsResponse.model_validate(content)
 
-    def get_children(self, umls_id: str, sort_prefix: str) -> GetFamilyResponse:
+    def get_children(self, umls_id: str, sort_prefix: str) -> GetNeighborsResponse:
         try:
             _ = RelationshipType[sort_prefix]
         except KeyError:
@@ -257,7 +256,7 @@ class EntityDisambiguatorLambdaClient:
         content = json.loads(r.content)
         content = {"id": content["id"], "edges": content["result"]}
 
-        return GetFamilyResponse.model_validate(content)
+        return GetNeighborsResponse.model_validate(content)
 
     def get_neighbors(self, umls_id: str, sort_prefix: str) -> GetNeighborsResponse:
         payload = {

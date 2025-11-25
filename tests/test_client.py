@@ -84,7 +84,7 @@ def test_get_ancestors():
     # tylenol
     r = client.get_parents("C0699142", sort_prefix="PRED")
     print(r)
-    assert len(r.edges) == 2
+    assert len(r.result) == 2
 
     r = client.get_ancestors("C0699142", sort_prefix="SYN")
     print(r)
@@ -93,7 +93,7 @@ def test_get_ancestors():
 def test_get_descendants():
     # tylenol
     r = client.get_children("C0699142", sort_prefix="SYN")
-    assert len(r.edges) == 1
+    assert len(r.result) == 1
 
 
 def test_get_synonyms():
