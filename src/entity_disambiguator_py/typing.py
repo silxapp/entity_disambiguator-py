@@ -1,4 +1,4 @@
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from entity_disambiguator_py.model import (
     BatchGetAliasNameResponse,
@@ -14,6 +14,7 @@ from entity_disambiguator_py.model import (
 )
 
 
+@runtime_checkable
 class UMLSDbInterface(Protocol):
     def get_alias_id(self, alias_id: str) -> GetAliasResponse: ...
     def get_batch_alias_id(self, alias_ids: list[str]) -> BatchGetAliasResponse: ...
