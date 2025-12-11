@@ -151,3 +151,13 @@ class SynonymSet(BaseModel):
 class SynonymSetResponse(BaseModel):
     id: int
     result: SynonymSet
+
+
+class DocDBHierarchyMembership(BaseModel):
+    concept_id: str
+    hierarchies: list[str]
+
+
+class HierarchiesResponse(BaseModel):
+    id: int
+    hierarchies: DocDBHierarchyMembership
